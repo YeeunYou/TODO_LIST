@@ -3,9 +3,8 @@
 <head>
 <meta charset="utf-8">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
 <script>
-	function addPost(data)
+	function addTask(data)
 	{
 		$("#taskList").append("<tr><td><input type='CheckBox' name='doSth[]' id='" + data.id + "' /></td><td>" + data.description + "</td><td>" + data.priority +"</td><td>" + data.dateCreated +"</td><td>" + data.dateCompleted + "</td></tr>");
 	}
@@ -15,29 +14,22 @@
 		$.get("process.php?action=list", function(data){
 			for(var i = 0; i < data.length; i++)
 			{
-				addPost(data[i]);
+				addTask(data[i]);
 			}
 		});
 	}
-
-	function newTask()
-	{
-		
-	}
-
 
 	$(document).ready(function(){
 		listTasks();
 
 		$("#newForm").submit(function(event){
 			event.preventDefault(); 
-			if($("#newForm").valid())
-			{ 
-				alert($(this).serialize());
- 				$.post("process.php?action=new", $(this).serialize(), newTask);
- 				$("#description").val('');
- 				$("#priority").val('');
-			}
+			$.post("process.php?action=new", $(this).serialize(), function(data){
+				//addTask(data[0]);
+				alert(data[0]);
+			}); 
+			$("#description").val('');
+			$("#priority").val('');
 		}); 
 
 		$("#complete").click(function(event){
