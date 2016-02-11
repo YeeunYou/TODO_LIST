@@ -53,7 +53,7 @@
 				$("input[type=checkbox]:checked").each(function(i){
 					checkVal[i] = $(this).attr('id');
 				});
-				//alert(checkVal);
+				alert(checkVal);
 				
 			}
 		});
