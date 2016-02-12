@@ -3,33 +3,29 @@
 <head>
 <meta charset="utf-8">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-<script>
-	function addTask(data)
-	{
-		$("#taskList").append("<tr><td><input type='CheckBox' name='doSth[]' id='" + data.id + "' /></td><td>" + data.description + "</td><td>" + data.priority +"</td><td>" + data.dateCreated +"</td><td>" + data.dateCompleted + "</td></tr>");
-	}
-
-	function listTasks()
-	{
-		$.get("process.php?action=list", function(data){
-			for(var i = 0; i < data.length; i++)
-			{
-				addTask(data[i]);
-			}
-		});
-	}
-
+<script> 
 	$(document).ready(function(){
 		listTasks();
 
 		$("#newForm").submit(function(event){
-			event.preventDefault(); 
+			event.preventDefault();   
 			$.post("process.php?action=new", $(this).serialize(), function(data){
 				addTask(data[0]); 
-			}); 
+				//console.log(data[0]);
+			});
 			$("#description").val('');
 			$("#priority").val('');
 		}); 
+
+		$("#byPriority").click(function(event){
+			event.preventDefault();
+			$.get("process.php?sortby=priority", function(){
+				for(var i = 0; i < data.length; i++)
+				{
+					addTask(data[i]);
+				}
+			});
+		});
 
 		$("#complete").click(function(event){
 			event.preventDefault();
@@ -42,10 +38,9 @@
 			{
 				var checkVal = [];
 				$("input[type=checkbox]:checked").each(function(i){
-					checkVal[i] = $(this).attr('id');
+					checkVal[i] = 'id=' + $(this).attr('id');
 				});
-				alert(checkVal);
-				
+				alert(checkVal.join('&')); 
 			}
 		});
 
@@ -60,13 +55,30 @@
 			{
 				var checkVal = [];
 				$("input[type=checkbox]:checked").each(function(i){
-					checkVal[i] = $(this).attr('id');
+					checkVal[i] = 'id=' + $(this).attr('id');
 				});
 				alert(checkVal);
-				
+				/*$.get("process.php?action=delete", function(data){
+					console.log(data);
+				});*/
 			}
 		});
 	});
+
+	function addTask(data)
+	{
+		$("#taskList").append("<tr><td><input type='CheckBox' name='doSth[]' id='" + data.id + "' /></td><td>" + data.description + "</td><td>" + data.priority +"</td><td>" + data.dateCreated +"</td><td>" + data.dateCompleted + "</td></tr>");
+	}
+
+	function listTasks()
+	{
+		$.get("process.php?action=list", function(data){
+			for(var i = 0; i < data.length; i++)
+			{
+				addTask(data[i]);
+			}
+		});
+	}
 </script>
 <head>
 <body>
@@ -79,8 +91,8 @@
 <br/>
 	<table id="howDisplay"  border="1" border-collapse="collapse">
 		<th>Sort Order</th>
-		<tr><td><input type="radio" name="dateCreated">Sort by date created</td></tr>
-		<tr><td><input type="radio" name="priority">Sort by priority</td></tr>
+		<tr><td><input type="radio" id="byDate" name="dateCreated">Sort by date created</td></tr>
+		<tr><td><input type="radio" id="byPriority" name="priority">Sort by priority</td></tr>
 	</table>
 <br/> 
 	<table id="taskList" style="border: 1px solid black" border-collapse="collapse">
