@@ -25,11 +25,36 @@ else if(isset($_GET['sortby']))
 		listTasks($conn);
 	}
 }
+else if(isset($_GET['includecompleted']))
+{
+	if($_GET['includecompleted'] == 'false' && $_SERVER['REQUEST_METHOD'] == 'GET')
+	{
+		listTasks($conn);
+	}
+	else if($_GET['includecompleted'] == 'true' && $_SERVER['REQUEST_METHOD'] == 'GET')
+	{
+		listTasksAll($conn);
+	}
+}
+
+function listTasksAll($conn)
+{
+	$taskArr = array();
+	$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task ORDER BY dateCreated ASC";
+	if($result = $conn->query($query))
+	{
+		while($task = mysqli_fetch_assoc($result))
+		{
+			array_push($taskArr, $task);
+		}
+		echo json_encode($taskArr);
+	}
+}
 
 function listTasks($conn)
 {
 	$taskArr = array();
-	$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task ORDER BY dateCreated ASC";
+	$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task WHERE dateCompleted = '0000-00-00 00:00:00' ORDER BY dateCreated ASC";
 	if($result = $conn->query($query))
 	{
 		while($task = mysqli_fetch_assoc($result))
@@ -67,7 +92,7 @@ function newTask($conn)
 function prioritySort($conn)
 {
 	$taskArr = array();
-	$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task ORDER BY priority ASC";
+	$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task WHERE dateCompleted = '0000-00-00 00:00:00' ORDER BY priority ASC";
 	if($result = $conn->query($query))
 	{
 		while($task = mysqli_fetch_assoc($result))

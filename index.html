@@ -42,6 +42,31 @@
 			}
 		});
 
+		$("input[name='display']").click(function(event){
+			if($('input[name=display]:checked').val() == 'incomplete')
+			{
+				$.get("process.php?includecompleted=false", function(data){
+								$("#taskList tr").remove();
+								$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
+								for (var i= 0; i <data.length; i++) 
+								{ 
+									addTask(data[i]);
+								}; 
+				});
+			}
+			else if($('input[name=display]:checked').val() == 'all')
+			{
+				$.get("process.php?includecompleted=true", function(data){
+								$("#taskList tr").remove();
+								$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
+								for (var i= 0; i <data.length; i++) 
+								{ 
+									addTask(data[i]);
+								}; 
+				});
+			}
+		});
+
 		$("#complete").click(function(event){
 			event.preventDefault();
 			var checkNum = $('input[name="doSth[]"]:checked').length;
@@ -53,9 +78,9 @@
 			{
 				var checkVal = [];
 				$("input[type=checkbox]:checked").each(function(i){
-					checkVal[i] = 'id=' + $(this).attr('id');
-				});
-				alert(checkVal.join('&')); 
+					checkVal[i] = $(this).attr('id');
+				}); 
+				var data = JSON.stringify(checkVal);
 			}
 		});
 
@@ -100,8 +125,8 @@
 <h1>My task list</h1>
 	<table id="whatDisplay" border="1" border-collapse="collapse">
 		<th>Task to Display</th>
-		<tr><td><input type="radio" name="incomplete">Show incomplete only</td></tr>
-		<tr><td><input type="radio" name="all">Show all</td></tr>
+		<tr><td><input type="radio" value="incomplete" name="display">Show incomplete only</td></tr>
+		<tr><td><input type="radio" value="all" name="display">Show all</td></tr>
 	</table>
 <br/>
 	<table id="howDisplay"  border="1" border-collapse="collapse">
