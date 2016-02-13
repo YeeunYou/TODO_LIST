@@ -3,7 +3,7 @@ header("Content-Type: application/json");
 require_once('connect.php');
 $conn->select_db("lamp2proj1");
 
-if(isset($_GET['action']))
+if(isset($_GET['action']) && !empty($_GET['action']))
 { 
 	if($_GET['action'] == 'list' && $_SERVER['REQUEST_METHOD'] == 'GET')
 	{
@@ -19,6 +19,10 @@ else if(isset($_GET['sortby']))
 	if($_GET['sortby'] == 'priority' && $_SERVER['REQUEST_METHOD'] == 'GET')
 	{
 		prioritySort($conn);
+	}
+	else if($_GET['sortby'] == 'datecreated' && $_SERVER['REQUEST_METHOD'] == 'GET')
+	{
+		listTasks($conn);
 	}
 }
 
@@ -73,4 +77,5 @@ function prioritySort($conn)
 		echo json_encode($taskArr);
 	}
 }
+  
 ?>

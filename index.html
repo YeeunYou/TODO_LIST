@@ -29,6 +29,17 @@
 					}
 				});
 			}
+			else if($('input[name=sort]:checked').val() == "byDate")
+			{
+				$.get("process.php?sortby=datecreated", function(data){
+					$("#taskList tr").remove();
+					$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
+					for(var i = 0; i < data.length; i++)
+					{ 
+						addTask(data[i]);
+					}
+				});
+			}
 		});
 
 		$("#complete").click(function(event){
