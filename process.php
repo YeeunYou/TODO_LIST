@@ -1,10 +1,10 @@
 <?php
 header("Content-Type: application/json"); 
+require_once('connect.php');
+$conn->select_db("lamp2proj1");
+
 if(isset($_GET['action']))
 { 
-	require_once('connect.php');
-	$conn->select_db("lamp2proj1");
-
 	if($_GET['action'] == 'list' && $_SERVER['REQUEST_METHOD'] == 'GET')
 	{
 		listTasks($conn);
@@ -12,8 +12,14 @@ if(isset($_GET['action']))
 	else if($_GET['action'] == 'new' && $_SERVER['REQUEST_METHOD'] == 'POST')
 	{
 		newTask($conn);
+	}  
+}
+else if(isset($_GET['sortby']))
+{
+	if($_GET['sortby'] == 'priority' && $_SERVER['REQUEST_METHOD'] == 'GET')
+	{
+		prioritySort($conn);
 	}
-	mysqli_close($conn);
 }
 
 function listTasks($conn)
@@ -52,5 +58,19 @@ function newTask($conn)
 			}
 			echo json_encode($taskArr);
 		}
+}
+
+function prioritySort($conn)
+{
+	$taskArr = array();
+	$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task ORDER BY priority ASC";
+	if($result = $conn->query($query))
+	{
+		while($task = mysqli_fetch_assoc($result))
+		{
+			array_push($taskArr, $task);
+		}
+		echo json_encode($taskArr);
+	}
 }
 ?>

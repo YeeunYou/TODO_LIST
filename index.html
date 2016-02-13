@@ -17,14 +17,18 @@
 			$("#priority").val('');
 		}); 
 
-		$("#byPriority").click(function(event){
-			event.preventDefault();
-			$.get("process.php?sortby=priority", function(){
-				for(var i = 0; i < data.length; i++)
-				{
-					addTask(data[i]);
-				}
-			});
+		$("input[name='sort']").click(function(event){
+			if($('input[name=sort]:checked').val() == "byPriority")
+			{
+				$.get("process.php?sortby=priority", function(data){
+					$("#taskList tr").remove();
+					$("#taskList").append()
+					for(var i = 0; i < data.length; i++)
+					{ 
+						addTask(data[i]);
+					}
+				});
+			}
 		});
 
 		$("#complete").click(function(event){
@@ -91,8 +95,8 @@
 <br/>
 	<table id="howDisplay"  border="1" border-collapse="collapse">
 		<th>Sort Order</th>
-		<tr><td><input type="radio" id="byDate" name="dateCreated">Sort by date created</td></tr>
-		<tr><td><input type="radio" id="byPriority" name="priority">Sort by priority</td></tr>
+		<tr><td><input type="radio" value="byDate" name="sort">Sort by date created</td></tr>
+		<tr><td><input type="radio" value="byPriority" name="sort">Sort by priority</td></tr>
 	</table>
 <br/> 
 	<table id="taskList" style="border: 1px solid black" border-collapse="collapse">
