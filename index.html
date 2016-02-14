@@ -21,19 +21,19 @@
 			event.preventDefault();
 			if($('input[name=display]:checked').val() == 'incomplete' && $('input[name=sort]:checked').val() == 'byPriority')
 			{
-				alert("incomplete, byPriority");
+				incPri();	
 			}
 			else if($('input[name=display]:checked').val() == 'incomplete' && $('input[name=sort]:checked').val() == 'byDate')
 			{
-				alert("incomplete, byDate again");
+				incDate();
 			}
 			else if($('input[name=display]:checked').val() == 'all' && $('input[name=sort]:checked').val() == 'byPriority')
 			{
-				alert("all, byPriority");
+				allPri();
 			}
 			else if($('input[name=display]:checked').val() == 'all' && $('input[name=sort]:checked').val() == 'byDate')
 			{
-				alert("all, byDate");
+				allDate();
 			}
 		});
 
@@ -75,6 +75,47 @@
 		});
 	});
 
+	function allDate()
+	{
+		$.get("process.php?action=list&sortby=datecreated&includecomplete=true", function(data){
+			$("#taskList tr").remove();
+			$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
+			for(var i = 0; i < data.length; i++)
+			{
+				addTask(data[i]);
+			}
+		});
+	}
+
+	function allPri()
+	{
+		$.get("process.php?action=list&sortby=priority&includecomplete=true", function(data){
+			$("#taskList tr").remove();
+			$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
+			for(var i = 0; i < data.length; i++)
+			{
+				addTask(data[i]);
+			}
+		});
+	}
+
+	function incDate()
+	{
+		listTasks();
+	}
+
+	function incPri()
+	{
+		$.get("process.php?action=list&sortby=priority&includecomplete=false", function(data){
+			$("#taskList tr").remove();
+			$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
+			for(var i = 0; i < data.length; i++)
+			{
+				addTask(data[i]);
+			}
+		});
+	}
+
 	function addTask(data)
 	{
 		$("#taskList").append("<tr><td><input type='CheckBox' name='doSth[]' id='" + data.id + "' /></td><td>" + data.description + "</td><td>" + data.priority +"</td><td>" + data.dateCreated +"</td><td>" + data.dateCompleted + "</td></tr>");
@@ -84,6 +125,8 @@
 	{
 		$('#incomplete, #byDate').attr('checked', true);
 		$.get("process.php?action=list&sortby=datecreated&includecomplete=false", function(data){
+			$("#taskList tr").remove();
+			$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
 			for(var i = 0; i < data.length; i++)
 			{
 				addTask(data[i]);

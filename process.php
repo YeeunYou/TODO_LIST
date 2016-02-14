@@ -13,7 +13,19 @@ if($_SERVER['REQUEST_METHOD'] == 'GET')
 		$includecomplete = $_GET['includecomplete'];
 		if($action == 'list' && $sortby == 'datecreated' && $includecomplete == 'false')
 		{
-			listTasks($conn);
+			incDate($conn);
+		}
+		else if($action == 'list' && $sortby == 'priority' && $includecomplete == 'false')
+		{
+			incPri($conn);
+		}
+		else if($action == 'list' && $sortby == 'datecreated' && $includecomplete == 'true')
+		{
+			allDate($conn);
+		}
+		else if($action == 'list' && $sortby == 'priority' && $includecomplete == 'true')
+		{
+			allPri($conn);
 		}
 	}
 }
@@ -26,40 +38,6 @@ else if($_SERVER['REQUEST_METHOD'] == 'POST')
 		{
 			newTask($conn);
 		}
-	}
-}
-
-
-function deleteTask($conn)
-{
-	
-}
-
-function listTasksAll($conn)
-{
-	$taskArr = array();
-	$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task ORDER BY dateCreated ASC";
-	if($result = $conn->query($query))
-	{
-		while($task = mysqli_fetch_assoc($result))
-		{
-			array_push($taskArr, $task);
-		}
-		echo json_encode($taskArr);
-	}
-}
-
-function listTasks($conn)
-{
-	$taskArr = array();
-	$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task WHERE completed = 0 ORDER BY dateCreated ASC";
-	if($result = $conn->query($query))
-	{
-		while($task = mysqli_fetch_assoc($result))
-		{
-			array_push($taskArr, $task);
-		}
-		echo json_encode($taskArr);
 	}
 }
 
@@ -87,7 +65,21 @@ function newTask($conn)
 		}
 }
 
-function prioritySort($conn)
+function incDate($conn)
+{
+	$taskArr = array();
+	$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task WHERE completed = 0 ORDER BY dateCreated ASC";
+	if($result = $conn->query($query))
+	{
+		while($task = mysqli_fetch_assoc($result))
+		{
+			array_push($taskArr, $task);
+		}
+		echo json_encode($taskArr);
+	}
+}
+
+function incPri($conn)
 {
 	$taskArr = array();
 	$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task WHERE completed = 0 ORDER BY priority ASC";
@@ -100,5 +92,32 @@ function prioritySort($conn)
 		echo json_encode($taskArr);
 	}
 }
-  
+
+function allDate($conn)
+{
+	$taskArr = array();
+	$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task ORDER BY dateCreated ASC";
+	if($result = $conn->query($query))
+	{
+		while($task = mysqli_fetch_assoc($result))
+		{
+			array_push($taskArr, $task);
+		}
+		echo json_encode($taskArr);
+	}
+}
+
+function allPri($conn)
+{
+	$taskArr = array();
+	$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task ORDER BY priority ASC";
+	if($result = $conn->query($query))
+	{
+		while($task = mysqli_fetch_assoc($result))
+		{
+			array_push($taskArr, $task);
+		}
+		echo json_encode($taskArr);
+	}
+}
 ?>
