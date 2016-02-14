@@ -16,54 +16,24 @@
 			$("#description").val('');
 			$("#priority").val('');
 		}); 
-
-		$("input[name='sort']").click(function(event){
-			if($('input[name=sort]:checked').val() == "byPriority")
+ 
+		$("input:radio[name=display], input:radio[name=sort]").change(function(event){
+			event.preventDefault();
+			if($('input[name=display]:checked').val() == 'incomplete' && $('input[name=sort]:checked').val() == 'byPriority')
 			{
-				$.get("process.php?sortby=priority", function(data){
-					$("#taskList tr").remove();
-					$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
-					for(var i = 0; i < data.length; i++)
-					{ 
-						addTask(data[i]);
-					}
-				});
+				alert("incomplete, byPriority");
 			}
-			else if($('input[name=sort]:checked').val() == "byDate")
+			else if($('input[name=display]:checked').val() == 'incomplete' && $('input[name=sort]:checked').val() == 'byDate')
 			{
-				$.get("process.php?sortby=datecreated", function(data){
-					$("#taskList tr").remove();
-					$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
-					for(var i = 0; i < data.length; i++)
-					{ 
-						addTask(data[i]);
-					}
-				});
+				alert("incomplete, byDate again");
 			}
-		});
-
-		$("input[name='display']").click(function(event){
-			if($('input[name=display]:checked').val() == 'incomplete')
+			else if($('input[name=display]:checked').val() == 'all' && $('input[name=sort]:checked').val() == 'byPriority')
 			{
-				$.get("process.php?includecompleted=false", function(data){
-								$("#taskList tr").remove();
-								$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
-								for (var i= 0; i <data.length; i++) 
-								{ 
-									addTask(data[i]);
-								}; 
-				});
+				alert("all, byPriority");
 			}
-			else if($('input[name=display]:checked').val() == 'all')
+			else if($('input[name=display]:checked').val() == 'all' && $('input[name=sort]:checked').val() == 'byDate')
 			{
-				$.get("process.php?includecompleted=true", function(data){
-								$("#taskList tr").remove();
-								$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
-								for (var i= 0; i <data.length; i++) 
-								{ 
-									addTask(data[i]);
-								}; 
-				});
+				alert("all, byDate");
 			}
 		});
 
@@ -95,12 +65,12 @@
 			{
 				var checkVal = [];
 				$("input[type=checkbox]:checked").each(function(i){
-					checkVal[i] = 'id=' + $(this).attr('id');
+					checkVal[i] = $(this).attr('id');
 				});
-				alert(checkVal);
-				/*$.get("process.php?action=delete", function(data){
+				var data = JSON.stringify(checkVal);
+				$.get("process.php?action=delete", function(data){
 					console.log(data);
-				});*/
+				});
 			}
 		});
 	});
@@ -112,7 +82,8 @@
 
 	function listTasks()
 	{
-		$.get("process.php?action=list", function(data){
+		$('#incomplete, #byDate').attr('checked', true);
+		$.get("process.php?action=list&sortby=datecreated&includecomplete=false", function(data){
 			for(var i = 0; i < data.length; i++)
 			{
 				addTask(data[i]);
@@ -125,14 +96,14 @@
 <h1>My task list</h1>
 	<table id="whatDisplay" border="1" border-collapse="collapse">
 		<th>Task to Display</th>
-		<tr><td><input type="radio" value="incomplete" name="display">Show incomplete only</td></tr>
-		<tr><td><input type="radio" value="all" name="display">Show all</td></tr>
+		<tr><td><input type="radio" id="incomplete" value="incomplete" name="display">Show incomplete only</td></tr>
+		<tr><td><input type="radio" id="all" value="all" name="display">Show all</td></tr>
 	</table>
 <br/>
 	<table id="howDisplay"  border="1" border-collapse="collapse">
 		<th>Sort Order</th>
-		<tr><td><input type="radio" value="byDate" name="sort">Sort by date created</td></tr>
-		<tr><td><input type="radio" value="byPriority" name="sort">Sort by priority</td></tr>
+		<tr><td><input type="radio" id="byDate" value="byDate" name="sort">Sort by date created</td></tr>
+		<tr><td><input type="radio" id="byPriority" value="byPriority" name="sort">Sort by priority</td></tr>
 	</table>
 <br/> 
 	<table id="taskList" style="border: 1px solid black" border-collapse="collapse">
