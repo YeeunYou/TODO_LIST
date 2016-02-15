@@ -38,8 +38,13 @@ else if($_SERVER['REQUEST_METHOD'] == 'POST')
 		{
 			newTask($conn);
 		}
+		else if($action == 'delete')
+		{
+			deleteTask($conn);
+		}
 	}
 }
+
 
 function newTask($conn)
 {
@@ -54,7 +59,7 @@ function newTask($conn)
 		$countRS = mysqli_query($conn, $countQry);
 		$lastID = $countRS->fetch_object()->count;
 	
-		$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task WHERE id = $lastID ORDER BY dateCreated ASC";
+		$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task WHERE id = $lastID AND completed = 0 ORDER BY dateCreated ASC";
 		if($result = $conn->query($query))
 		{
 			while($task = mysqli_fetch_assoc($result))
