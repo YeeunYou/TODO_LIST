@@ -8,7 +8,7 @@
 		listTasks();
 
 		$("#newForm").submit(function(event){
-			event.preventDefault();   
+			event.preventDefault();
 			//HTML required attribute does the validation but in case it is altered or fail to display error message, do alert
 			if($("#description").val() == '')
 			{

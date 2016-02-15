@@ -34,15 +34,44 @@ else if($_SERVER['REQUEST_METHOD'] == 'POST')
 	if(isset($_GET['action']))
 	{
 		$action = $_GET['action'];
-		if($action == 'new')
+		if($action == 'new' && isset($_POST['description']) && !empty($_POST['description']) && isset($_POST['priority']) && !empty($_POST['priority']))
 		{
 			newTask($conn);
 		}
 		else if($action == 'delete')
 		{
-			deleteTask($conn);
+			deleteTasks($conn);
+		}
+		else if($action == 'complete')
+		{
+			completeTasks($conn);
 		}
 	}
+}
+
+
+function completeTasks($conn)
+{
+	$completeID = json_decode($_POST['completeData'], true);
+	foreach ($completeID as $key => $value) 
+	{
+		$query = "UPDATE task SET completed = 1, dateCompleted = NOW() WHERE completed = 0 AND id = " . $value;
+		$conn->query($query); 
+	}
+
+	incDate($conn);
+}
+
+function deleteTasks($conn)
+{
+	$deleteID = json_decode($_POST['deleteData'], true);
+	foreach ($deleteID as $key => $value) 
+	{
+		$query = "DELETE FROM task WHERE id =" . $value;
+		$conn->query($query); 
+	}
+
+	allDate($conn);
 }
 
 
@@ -54,12 +83,9 @@ function newTask($conn)
 	
 	$insert = $conn->query("INSERT INTO task(description, priority, dateCreated, completed, dateCompleted) VALUES ('" . $description ."','" . $priority . "' , NOW(), 0, '0000-00-00 00:00:00')");
 	$conn->query($insert);
-	
-		$countQry = sprintf("SELECT count(id) AS count FROM task");
-		$countRS = mysqli_query($conn, $countQry);
-		$lastID = $countRS->fetch_object()->count;
-	
-		$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task WHERE id = $lastID AND completed = 0 ORDER BY dateCreated ASC";
+	$lastid = mysqli_insert_id($conn);
+
+		$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task WHERE id = $lastid AND completed = 0 ORDER BY dateCreated ASC";
 		if($result = $conn->query($query))
 		{
 			while($task = mysqli_fetch_assoc($result))
