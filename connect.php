@@ -1,7 +1,7 @@
 <?php 
 define("HOST", "localhost");
-define("USER", "emily");
-define("PASSWORD", "emilyyou3b");
+define("USER", "username");
+define("PASSWORD", "password");
 
 $conn = new mysqli(HOST, USER, PASSWORD);
 
