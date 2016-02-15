@@ -71,13 +71,13 @@ function deleteTasks($conn)
 		$conn->query($query); 
 	}
 
-	allDate($conn);
+	incDate($conn);
 }
 
 
 function newTask($conn)
 {
-	$description = $_POST['description'];
+	$description = strip_tags(addslashes($_POST['description']));
 	$priority = $_POST['priority'];
 	$taskArr = array();
 	
@@ -85,15 +85,15 @@ function newTask($conn)
 	$conn->query($insert);
 	$lastid = mysqli_insert_id($conn);
 
-		$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task WHERE id = $lastid AND completed = 0 ORDER BY dateCreated ASC";
-		if($result = $conn->query($query))
+	$query = "SELECT id, description, priority, dateCreated, dateCompleted FROM task WHERE id = $lastid AND completed = 0";
+	if($result = $conn->query($query))
+	{
+		while($task = mysqli_fetch_assoc($result))
 		{
-			while($task = mysqli_fetch_assoc($result))
-			{
-				array_push($taskArr, $task);
-			}
-			echo json_encode($taskArr);
+			array_push($taskArr, $task);
 		}
+		echo json_encode($taskArr);
+	}
 }
 
 function incDate($conn)
