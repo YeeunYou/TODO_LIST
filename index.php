@@ -20,8 +20,8 @@
 			}
 			else if(($("#description").val() != '') && ($("#priority").val() != ''))
 			{
-				$.post("process.php?action=new", $(this).serialize(), function(data){ 
-					addTask(data[0]); 
+				$.post("process.php?action=new", $(this).serialize(), function(data){
+					checkradio();
 				});
 				$("#description").val('');
 				$("#priority").val('');
@@ -30,22 +30,7 @@
  
 		$("input:radio[name=display], input:radio[name=sort]").change(function(event){
 			event.preventDefault();
-			if($('input[name=display]:checked').val() == 'incomplete' && $('input[name=sort]:checked').val() == 'byPriority')
-			{
-				incPri();	
-			}
-			else if($('input[name=display]:checked').val() == 'incomplete' && $('input[name=sort]:checked').val() == 'byDate')
-			{
-				incDate();
-			}
-			else if($('input[name=display]:checked').val() == 'all' && $('input[name=sort]:checked').val() == 'byPriority')
-			{
-				allPri();
-			}
-			else if($('input[name=display]:checked').val() == 'all' && $('input[name=sort]:checked').val() == 'byDate')
-			{
-				allDate();
-			}
+			checkradio();
 		});
 
 		$("#complete").click(function(event){
@@ -85,35 +70,54 @@
 		});
 	});
 
+	function checkradio()
+	{
+		if($('input[name=display]:checked').val() == 'incomplete' && $('input[name=sort]:checked').val() == 'byPriority')
+			{
+				incPri();	
+			}
+			else if($('input[name=display]:checked').val() == 'incomplete' && $('input[name=sort]:checked').val() == 'byDate')
+			{
+				incDate();
+			}
+			else if($('input[name=display]:checked').val() == 'all' && $('input[name=sort]:checked').val() == 'byPriority')
+			{
+				allPri();
+			}
+			else if($('input[name=display]:checked').val() == 'all' && $('input[name=sort]:checked').val() == 'byDate')
+			{
+				allDate();
+			}
+	}
+
 	function completeTask(json)
 	{
 		$.post("process.php?action=complete", {completeData:json}, function(data){
-			$("#taskList tr").remove();
-			$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
+			refreshTable();
 			for(var i =0; i<data.length; i++)
 			{
 				addTask(data[i]);
 			}
+			checkradio();
 		});
 	}
 
 	function deleteTask(json)
 	{
 		$.post("process.php?action=delete", {deleteData:json}, function(data){
-			$("#taskList tr").remove();
-			$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
+			refreshTable();
 			for(var i =0; i<data.length; i++)
 			{
 				addTask(data[i]);
 			}
+			checkradio();
 		});
 	}
 
 	function allDate()
 	{
 		$.get("process.php?action=list&sortby=datecreated&includecomplete=true", function(data){
-			$("#taskList tr").remove();
-			$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
+			refreshTable();
 			for(var i = 0; i < data.length; i++)
 			{
 				addTask(data[i]);
@@ -124,8 +128,7 @@
 	function allPri()
 	{
 		$.get("process.php?action=list&sortby=priority&includecomplete=true", function(data){
-			$("#taskList tr").remove();
-			$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
+			refreshTable();
 			for(var i = 0; i < data.length; i++)
 			{
 				addTask(data[i]);
@@ -141,8 +144,7 @@
 	function incPri()
 	{
 		$.get("process.php?action=list&sortby=priority&includecomplete=false", function(data){
-			$("#taskList tr").remove();
-			$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
+			refreshTable();
 			for(var i = 0; i < data.length; i++)
 			{
 				addTask(data[i]);
@@ -159,13 +161,18 @@
 	{
 		$('#incomplete, #byDate').attr('checked', true);
 		$.get("process.php?action=list&sortby=datecreated&includecomplete=false", function(data){
-			$("#taskList tr").remove();
-			$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
+			refreshTable();
 			for(var i = 0; i < data.length; i++)
 			{
 				addTask(data[i]);
 			}
 		});
+	}
+
+	function refreshTable()
+	{
+		$("#taskList tr").remove();
+			$("#taskList").append("<tr><th>CheckBox</th><th>Description</th><th>Priority</th><th>Date Created</th><th>Date Completed</th></tr>");
 	}
 </script>
 <head>
